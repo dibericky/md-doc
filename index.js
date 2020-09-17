@@ -12,6 +12,7 @@ const filesDocs = getFilesFromDirDocs()
 
 for (const fileDetail of filesDocs) {
     fastify.get(`/${fileDetail.name}`, (request, reply) => {
+        request.log.debug({fileName: fileDetail.name}, 'file name')
         reply
         .type('text/html; charset=utf-8')
         .send(mdToHtml(fileDetail.content))
@@ -25,11 +26,12 @@ fastify.listen(3000, (err, address) => {
 
 function getFilesFromDirDocs () {
     const dirPath = path.join(__dirname, 'docs')
+    console.log({dirPath}, 'dirPath')
     const filesNameInDir = fs.readdirSync(dirPath)
     const filesNameAndContent = filesNameInDir.map(fileName => {
         const filePath = path.join(dirPath, fileName)
+        console.log({filePath})
         const fileContent = fs.readFileSync(filePath, {encoding: 'utf8'})
-        console.log(fileContent)
         return {content: fileContent, name: fileName.replace(/\..*$/g, '')}
     })
     return filesNameAndContent
