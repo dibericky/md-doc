@@ -27,11 +27,23 @@ fastify.listen(3000, (err, address) => {
 function getFilesFromDirDocs () {
     const dirPath = path.join(__dirname, 'docs')
     console.log({dirPath}, 'dirPath')
-    const filesNameInDir = fs.readdirSync(dirPath)
+    let filesNameInDir
+    try {
+        filesNameInDir = fs.readdirSync(dirPath)
+    } catch (err) {
+        console.log({dirPath, err}, 'failed to read dir')
+        throw err
+    }
     const filesNameAndContent = filesNameInDir.map(fileName => {
         const filePath = path.join(dirPath, fileName)
         console.log({filePath})
-        const fileContent = fs.readFileSync(filePath, {encoding: 'utf8'})
+        let fileContent
+        try {
+            fileContent = fs.readFileSync(filePath, {encoding: 'utf8'})
+        } catch (err) {
+            console.log({filePath, err}, 'failed to read file')
+            throw err
+        }
         return {content: fileContent, name: fileName.replace(/\..*$/g, '')}
     })
     return filesNameAndContent
